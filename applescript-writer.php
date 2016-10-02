@@ -15,12 +15,6 @@ EOD;
 
 $snapshot = snapshotGenerator(0);
 
-$snapshotBlock = <<<EOD
-	set theCurrentDate to (time of(current date))
-	set shellCommand to "/usr/sbin/screencapture " & theDesktop & "Screen_Shot_" & theCurrentDate & ".png"
-	do shell script shellCommand
-EOD;
-
 $header = <<<EOD
 tell application "Terminal"
 	set theDesktop to POSIX path of (path to desktop as string)
@@ -41,22 +35,27 @@ tell application "Terminal"
 	end tell
 	delay 5
 	do script "clear" in currentTab
-	delay 10
+	delay 5
 
 EOD;
 
 $output = $header;
 $output .= $snapshot() . "\n";
 foreach ($lines as $line) {
-	$output .= "\tset w to do script \"" . $line . "\" in currentTab\n".
-		<<<EOD
-	repeat 
-		delay 1
-		if not busy of w then exit repeat
-	end repeat
+	if(substr($line,0,1) == "!"){
+		$output .= enterKeyStrokes(substr($line,1));
+	}else{
+		$output .= waitForScript($line);
+	}
+	//$output .= "\tset w to do script \"" . $line . "\" in currentTab\n".
+		//<<<EOD
+	//repeat 
+		//delay 1
+		//if not busy of w then exit repeat
+	//end repeat
 
-EOD
-		. "\tdelay 1\n" 
+//EOD;
+	$output.= "\tdelay 1\n" 
 		. $snapshot() 
 		. "\n";
 }
@@ -67,6 +66,78 @@ $output .= <<<EOD
 	end tell
 end tell
 EOD;
-print_r($output);
+//print_r($output);
 
+$tempFile = "/tmp/temp_command.applescript";
+file_put_contents($tempFile,$output);
+exec("/usr/bin/osascript $tempFile");
+//exec("rm -rf $tempFile");
+
+
+function waitForScript($line){
+	$output = "\tset w to do script \"" . $line . "\" in currentTab\n".
+		<<<EOD
+	repeat 
+		delay 1
+		if not busy of w then exit repeat
+	end repeat
+
+EOD;
+	return $output;
+}
+
+
+function printWord($word){
+	$chars = [
+		"1"=>"18",
+		"2"=>"19",
+		"3"=>"20",
+		"4"=>"21",
+		"5"=>"23",
+		"6"=>"22",
+		"7"=>"26",
+		"8"=>"28",
+		"9"=>"25",
+		"0"=>"29",
+		"+"=>"24 using shift down",
+		];
+	$buffer = "";
+	$output = "\ttell application \"System Events\"\n";
+	$letters = [];
+	for($i=0;$i<strlen($word);$i++){
+		$letters[]=substr($word,$i,1);
+	}
+	foreach ($letters as $letter){
+		if(array_key_exists($letter,$chars)){
+			if($buffer != ""){
+				$output .= "\t\tkeystroke \"$buffer\"\n";
+				$buffer = "";
+			}
+			$output .= "\t\tkey code " . $chars[$letter] . "\n";
+		}else{
+			$buffer .= $letter;
+		}
+	}
+	if($buffer != ""){
+		$output .= "\t\tkeystroke \"$buffer\"\n";
+		$buffer = "";
+	}
+	$output .= "\tend tell\n";
+	return $output;
+}
+
+
+function enterKeystrokes($line){
+	$words = preg_split(":\s+:",$line);
+	$output.="";
+	foreach ($words as $word){
+		//$output.="\ttell application \"System Events\" to keystroke \"$word\"\n";
+		$output.=printWord($word);
+		$output.="\tdelay .1\n";
+		$output.="\ttell application \"System Events\" to keystroke space\n";
+		$output.="\tdelay .1\n";
+	}
+	$output.="\ttell application \"System Events\" to keystroke return\n";
+	return $output;
+}
 ?>
