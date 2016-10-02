@@ -47,14 +47,6 @@ foreach ($lines as $line) {
 	}else{
 		$output .= waitForScript($line);
 	}
-	//$output .= "\tset w to do script \"" . $line . "\" in currentTab\n".
-		//<<<EOD
-	//repeat 
-		//delay 1
-		//if not busy of w then exit repeat
-	//end repeat
-
-//EOD;
 	$output.= "\tdelay 1\n" 
 		. $snapshot() 
 		. "\n";
@@ -100,6 +92,7 @@ function printWord($word){
 		"9"=>"25",
 		"0"=>"29",
 		"+"=>"24 using shift down",
+		"-"=>"27",
 		];
 	$buffer = "";
 	$output = "\ttell application \"System Events\"\n";
