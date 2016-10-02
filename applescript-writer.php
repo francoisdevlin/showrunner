@@ -63,7 +63,7 @@ EOD;
 $tempFile = "/tmp/temp_command.applescript";
 file_put_contents($tempFile,$output);
 exec("/usr/bin/osascript $tempFile");
-//exec("rm -rf $tempFile");
+exec("rm -rf $tempFile");
 
 
 function waitForScript($line){
@@ -94,7 +94,6 @@ function printWord($word){
 		"+"=>"24 using shift down",
 		"-"=>"27",
 		];
-	$buffer = "";
 	$output = "\ttell application \"System Events\"\n";
 	$letters = [];
 	for($i=0;$i<strlen($word);$i++){
@@ -102,18 +101,11 @@ function printWord($word){
 	}
 	foreach ($letters as $letter){
 		if(array_key_exists($letter,$chars)){
-			if($buffer != ""){
-				$output .= "\t\tkeystroke \"$buffer\"\n";
-				$buffer = "";
-			}
 			$output .= "\t\tkey code " . $chars[$letter] . "\n";
 		}else{
-			$buffer .= $letter;
+			$output .= "\t\tkeystroke \"$letter\"\n";
 		}
-	}
-	if($buffer != ""){
-		$output .= "\t\tkeystroke \"$buffer\"\n";
-		$buffer = "";
+		$output .= "\t\tdelay .02\n";
 	}
 	$output .= "\tend tell\n";
 	return $output;
