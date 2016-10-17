@@ -22,15 +22,12 @@ tell application "Terminal"
 	set frontWindow to window 1
 	set currentTab to do script "echo 'Hello World'"
 	tell application "System Events"
-		keystroke "+" using {command down}
-		keystroke "+" using {command down}
-		keystroke "+" using {command down}
-		keystroke "+" using {command down}
-		keystroke "+" using {command down}
-		keystroke "+" using {command down}
-		keystroke "+" using {command down}
-		keystroke "+" using {command down}
-		keystroke "+" using {command down}
+
+EOD;
+for($i=0;$i<13;$i++){
+	$header.= "\t\tkeystroke \"+\" using {command down}\n";
+}
+$header .= <<<EOD
 		keystroke "f" using {command down, control down}
 	end tell
 	delay 5
