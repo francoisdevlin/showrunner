@@ -2,18 +2,18 @@
 $filename = $argv[1];
 $lines = preg_split(":\n:",trim(file_get_contents($filename)));
 
-function snapshotGenerator($i){
+function snapshotGenerator($i,$name){
 	$i = $i - 1;
-	return function() use(&$i){
+	return function() use(&$i,$name){
 		$i++;
 		return <<<EOD
-	set shellCommand to "/usr/sbin/screencapture " & theDesktop & "Screen_Shot_$i.png"
+	set shellCommand to "/usr/sbin/screencapture " & theDesktop & "$name-$i.png"
 	do shell script shellCommand
 EOD;
 	};
 }
 
-$snapshot = snapshotGenerator(0);
+$snapshot = snapshotGenerator(0,$filename);
 
 $header = <<<EOD
 tell application "Terminal"
@@ -42,6 +42,9 @@ EOD;
 $output = $header;
 $output .= $snapshot() . "\n";
 foreach ($lines as $line) {
+	if(trim($line)==""){
+		continue;
+	}
 	if(substr($line,0,1) == "!"){
 		$output .= enterKeyStrokes(substr($line,1));
 	}else{
@@ -63,7 +66,7 @@ EOD;
 $tempFile = "/tmp/temp_command.applescript";
 file_put_contents($tempFile,$output);
 exec("/usr/bin/osascript $tempFile");
-exec("rm -rf $tempFile");
+//exec("rm -rf $tempFile");
 
 
 function waitForScript($line){
@@ -93,7 +96,14 @@ function printWord($word){
 		"0"=>"29",
 		"+"=>"24 using shift down",
 		"-"=>"27",
+		"\""=>"39 using shift down",
+		"`"=>"50",
+		//" "=>"space",
+		"\\"=>"\"\\\"",
 		];
+	if(strlen($word)==0){
+		return "";
+	}
 	$output = "\ttell application \"System Events\"\n";
 	$letters = [];
 	for($i=0;$i<strlen($word);$i++){
@@ -113,15 +123,25 @@ function printWord($word){
 
 
 function enterKeystrokes($line){
+	//$line = trim($line);
 	$words = preg_split(":\s+:",$line);
 	$output.="";
+	$i = 0;
+	$wordEntries = [];
 	foreach ($words as $word){
-		//$output.="\ttell application \"System Events\" to keystroke \"$word\"\n";
-		$output.=printWord($word);
-		$output.="\tdelay .1\n";
-		$output.="\ttell application \"System Events\" to keystroke space\n";
-		$output.="\tdelay .1\n";
+		$entry = "";
+		$entry.= "\t-- \"$word\"\n";
+		//$entry.="\ttell application \"System Events\" to keystroke \"$word\"\n";
+		$entry.=printWord($word);
+		$entry.="\tdelay .1\n";
+		$wordEntries[] = $entry;
 	}
+	$spaceInfo = <<<EOD
+	tell application "System Events" to keystroke space
+	delay .1
+
+EOD;
+	$output = join($spaceInfo,$wordEntries);
 	$output.="\ttell application \"System Events\" to keystroke return\n";
 	return $output;
 }
