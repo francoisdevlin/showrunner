@@ -109,13 +109,18 @@ function printWord($word){
 	for($i=0;$i<strlen($word);$i++){
 		$letters[]=substr($word,$i,1);
 	}
+	$maxKeys = 3;
+	$current = 0;
 	foreach ($letters as $letter){
 		if(array_key_exists($letter,$chars)){
 			$output .= "\t\tkey code " . $chars[$letter] . "\n";
 		}else{
 			$output .= "\t\tkeystroke \"$letter\"\n";
 		}
-		$output .= "\t\tdelay .02\n";
+		if($current < $maxKeys){
+			$output .= "\t\tdelay .02\n";
+			$current++;
+		}
 	}
 	$output .= "\tend tell\n";
 	return $output;
