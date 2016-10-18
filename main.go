@@ -2,16 +2,9 @@ package main
 
 import (
 	"fmt"
-	"regexp"
-	//"strings"
 
 	"git.sevone.com/glider-guns/showrunner.git/showrunner"
 )
-
-func splitLines(text string) []string {
-	rp := regexp.MustCompile("[\r\n]")
-	return rp.Split(text, -1)
-}
 
 func main() {
 	comment := "--"
@@ -26,8 +19,7 @@ Terrible?
 --split
 Awesome?
 `
-	fmt.Println(len(splitLines(inputText)))
-	for i, temp := range showrunner.BuildText(comment, splitLines(inputText)) {
+	for i, temp := range showrunner.BuildText(comment, showrunner.SplitLines(inputText)) {
 		fmt.Println(i)
 		fmt.Println(temp)
 	}
