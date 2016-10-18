@@ -60,3 +60,40 @@ Awesome?
 		t.Error("The thrid entry does not match the expected value")
 	}
 }
+
+/*
+Tests that splits ignore whitespace
+*/
+func TestKeywordsIgnoreWhitespace(t *testing.T) {
+	comment := "--"
+	inputText := `Hi
+Everyone
+  --split
+Isn't
+This
+--split  
+Awesome?
+`
+	output := BuildText(comment, SplitLines(inputText))
+	if len(output) != 3 {
+		t.Error("The output array is the wrong size, it should be 3")
+	}
+	if output[0] != `Hi
+Everyone` {
+		t.Error("The first entry does not match the expected value")
+	}
+	if output[1] != `Hi
+Everyone
+Isn't
+This` {
+		t.Error("The second entry does not match the expected value")
+	}
+	if output[2] != `Hi
+Everyone
+Isn't
+This
+Awesome?
+` {
+		t.Error("The thrid entry does not match the expected value")
+	}
+}
