@@ -113,6 +113,70 @@ Awesome?
 /*
 Tests the most basic re-split usage
 */
+func TestRepeatedResplit(t *testing.T) {
+	comment := "--"
+	inputText := `Hi
+Everyone
+--split
+Isn't
+This
+--split
+Terrible?
+--re-split
+Ugly?
+--re-split
+Fun?
+--re-split
+Awesome?
+`
+	output := BuildText(comment, SplitLines(inputText))
+	if len(output) != 6 {
+		t.Error("The output array is the wrong size, it should be 6")
+	}
+	if output[0] != `Hi
+Everyone` {
+		t.Error("The first entry does not match the expected value")
+	}
+	if output[1] != `Hi
+Everyone
+Isn't
+This` {
+		t.Error("The second entry does not match the expected value")
+	}
+	if output[2] != `Hi
+Everyone
+Isn't
+This
+Terrible?` {
+		t.Error("The thrid entry does not match the expected value")
+	}
+	if output[3] != `Hi
+Everyone
+Isn't
+This
+Ugly?` {
+		t.Error("The thrid entry does not match the expected value")
+	}
+	if output[4] != `Hi
+Everyone
+Isn't
+This
+Fun?` {
+		t.Error("The thrid entry does not match the expected value")
+	}
+	if output[5] != `Hi
+Everyone
+Isn't
+This
+Awesome?
+` {
+		t.Error("The fourth entry does not match the expected value")
+	}
+}
+
+/*
+Tests the most basic re-split usage
+*/
 func TestBasicResplitWithTrailingSplit(t *testing.T) {
 	comment := "--"
 	inputText := `Hi
