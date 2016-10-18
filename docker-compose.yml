@@ -1,0 +1,7 @@
+version: "2"
+services:
+  builder:
+    image: "golang:1.7"
+    volumes:
+     - "$PWD:/go/src/git.sevone.com/glider-guns/showrunner.git"
+    working_dir: "/go/src/git.sevone.com/glider-guns/showrunner.git"
