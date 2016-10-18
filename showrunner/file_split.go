@@ -2,9 +2,14 @@ package showrunner
 
 import (
 	//"fmt"
-	//"regexp"
+	"regexp"
 	"strings"
 )
+
+func SplitLines(text string) []string {
+	rp := regexp.MustCompile("[\r\n]")
+	return rp.Split(text, -1)
+}
 
 func BuildText(comment string, lines []string) []string {
 	current := []string{}
