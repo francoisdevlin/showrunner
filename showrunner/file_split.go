@@ -2,6 +2,7 @@ package showrunner
 
 import (
 	//"fmt"
+	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -55,4 +56,14 @@ func BuildText(comment string, lines []string) []string {
 		output = append(output, strings.Join(entry, "\n"))
 	}
 	return output
+}
+
+func GetLineCommentString(filename string) string {
+	extension := filepath.Ext(filename)
+	return map[string]string{
+		".hs":   "--",
+		".go":   "//",
+		".java": "//",
+		".php":  "//",
+	}[extension]
 }

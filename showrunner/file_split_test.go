@@ -254,3 +254,15 @@ Awesome?
 		t.Error("The thrid entry does not match the expected value")
 	}
 }
+
+func TestCommentLinePrefix(t *testing.T) {
+	values := map[string]string{
+		"myfile.hs": "--",
+	}
+
+	for key, expectedValue := range values {
+		if expectedValue != GetLineCommentString(key) {
+			t.Error("Could not verify tuple", key, expectedValue, GetLineCommentString(key))
+		}
+	}
+}
