@@ -11,11 +11,11 @@ func SplitLines(text string) []string {
 	return rp.Split(text, -1)
 }
 
-func appendEntry(entries [][]string, current []string, isResplit bool) [][]string {
+func appendEntry(entries [][]string, current []string, lastSplit int) [][]string {
 
-	if isResplit {
+	if len(entries) != lastSplit+1 {
 		if len(entries) > 1 {
-			current = append(entries[len(entries)-2], current...)
+			current = append(entries[lastSplit], current...)
 		}
 		if len(current) == 0 {
 			return entries
@@ -34,22 +34,21 @@ func appendEntry(entries [][]string, current []string, isResplit bool) [][]strin
 func BuildText(comment string, lines []string) []string {
 	current := []string{}
 	entries := [][]string{}
-	isResplit := false
+	lastSplit := -1
 	for _, line := range lines {
 		trimmedLine := strings.TrimSpace(line)
 		if trimmedLine == comment+"re-split" {
-			entries = appendEntry(entries, current, isResplit)
-			isResplit = true
+			entries = appendEntry(entries, current, lastSplit)
 			current = []string{}
 		} else if trimmedLine == comment+"split" {
-			entries = appendEntry(entries, current, isResplit)
-			isResplit = false
+			entries = appendEntry(entries, current, lastSplit)
+			lastSplit = len(entries) - 1
 			current = []string{}
 		} else {
 			current = append(current, line)
 		}
 	}
-	entries = appendEntry(entries, current, isResplit)
+	entries = appendEntry(entries, current, lastSplit)
 
 	output := []string{}
 	for _, entry := range entries {
