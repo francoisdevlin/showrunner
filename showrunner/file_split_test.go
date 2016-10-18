@@ -99,7 +99,6 @@ Isn't
 This
 Terrible?` {
 		t.Error("The thrid entry does not match the expected value")
-		t.Error(output[2])
 	}
 	if output[3] != `Hi
 Everyone
@@ -108,7 +107,6 @@ This
 Awesome?
 ` {
 		t.Error("The fourth entry does not match the expected value")
-		t.Error(output[3])
 	}
 }
 
