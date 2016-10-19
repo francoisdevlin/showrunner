@@ -95,6 +95,7 @@ function printWord($word){
 		"-"=>"27",
 		"\""=>"39 using shift down",
 		"`"=>"50",
+		"."=>"47",
 		//" "=>"space",
 		"\\"=>"\"\\\"",
 		];
