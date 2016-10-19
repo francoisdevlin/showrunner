@@ -17,6 +17,11 @@ func TestBasicWord(t *testing.T) {
 		delay .02
 	end tell
 `},
+		[]string{"2", `	tell application "System Events"
+		key code "19"
+		delay .02
+	end tell
+`},
 	}
 	for _, pair := range pairs {
 		input := pair[0]
