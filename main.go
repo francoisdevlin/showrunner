@@ -8,7 +8,8 @@ import (
 )
 
 var options = map[string]func() showrunner.Command{
-	"file-split": func() showrunner.Command { return new(showrunner.FileSplit) },
+	"file-split":  func() showrunner.Command { return new(showrunner.FileSplit) },
+	"applescript": func() showrunner.Command { return new(showrunner.Applescript) },
 }
 
 func main() {
