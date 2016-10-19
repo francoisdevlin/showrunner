@@ -19,17 +19,24 @@ func (this *FileSplit) Main(args []string) error {
 		flag.PrintDefaults()
 	}
 	f.Parse(args)
-	fmt.Println(*wordPtr)
-	fmt.Println(filepath.Base(*wordPtr))
-	fmt.Println(filepath.Dir(*wordPtr))
-	fmt.Println(filepath.Ext(*wordPtr))
 	comment := GetLineCommentString(*wordPtr)
 
 	buff, _ := ioutil.ReadFile(*wordPtr)
 	inputText := string(buff)
-	for i, temp := range BuildText(comment, SplitLines(inputText)) {
-		fmt.Println(i, "\n")
-		fmt.Println(temp)
+	baseName := filepath.Base(*wordPtr)
+	ext := filepath.Ext(*wordPtr)
+	basic := baseName[0 : len(baseName)-len(ext)]
+	//Remove the trailing -all, if it exists
+	if basic[len(basic)-4:] == "-all" {
+		basic = basic[:len(basic)-4]
+	}
+	for i, fileContents := range BuildText(comment, SplitLines(inputText)) {
+		outfile := fmt.Sprintf("%s/%s-%d%s", filepath.Dir(*wordPtr), basic, i, ext)
+		fmt.Println(outfile, "\n")
+		err := ioutil.WriteFile(outfile, []byte(fileContents), 0644)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
