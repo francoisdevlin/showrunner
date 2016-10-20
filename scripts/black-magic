@@ -1,14 +1,14 @@
 #!/bin/bash
-IN_FILE="$1"
+IN_PATH="$1"
+IN_FILE="$IN_PATH/$(basename $IN_PATH).go"
 BASE=$(basename "$IN_FILE")
 OUT_FILE="${BASE%.*}.commands"
-echo "Hi $FILE"
 echo "!vi $BASE" > $OUT_FILE
 echo "!i" >> $OUT_FILE
 sed -e 's:.*//.*::' -e 's/^/-!/' $IN_FILE | uniq | perl -0pe 's/-!([^\n]+)\n-!\n/!$1\n-!\n/sg' | sed -e 's/! */!/' >> $OUT_FILE
 echo "^53" >> $OUT_FILE
 echo "!:q!" >> $OUT_FILE
-perl -i -0pe 's/!i\n-!\n!p/!ip/s' $OUT_FILE
+perl -i -0pe 's/!i\n-!\n!p/-!ip/s' $OUT_FILE
 #sed -i -e '/}/d' $OUT_FILE
 #perl -i -0pe 's/{/{\n-^30 using shift down\n-^126\n-^53\n-^0 using shift down\n!/sg' $OUT_FILE
 show-runner applescript -file $OUT_FILE

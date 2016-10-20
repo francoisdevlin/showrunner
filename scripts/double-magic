@@ -1,0 +1,3 @@
+#!/bin/bash
+~/k8shelper/scripts/black-magic $1
+~/k8shelper/scripts/white-magic $1
