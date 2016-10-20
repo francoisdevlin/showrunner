@@ -2,6 +2,7 @@ package showrunner
 
 import (
 	"fmt"
+	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -136,12 +137,15 @@ tell application "Terminal"
 	return header
 }
 
-func lineBuilder(lines []string, filepath string, size int) string {
+func lineBuilder(lines []string, path string, size int) string {
 	output := getHeader(size)
 	i := -1
+	baseName := filepath.Base(path)
+	ext := filepath.Ext(path)
+	basic := baseName[0 : len(baseName)-len(ext)]
 	snapshot := func() string {
 		i++
-		return (fmt.Sprintf("\tset shellCommand to \"/usr/sbin/screencapture \" & theDesktop & \"%s-%d.png\"\n", filepath, i) +
+		return (fmt.Sprintf("\tset shellCommand to \"/usr/sbin/screencapture \" & theDesktop & \"%s-%d.png\"\n", basic, i) +
 			"\tdo shell script shellCommand\n")
 	}
 	output += snapshot()
