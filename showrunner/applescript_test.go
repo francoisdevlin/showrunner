@@ -49,3 +49,40 @@ func TestBasicWord(t *testing.T) {
 		}
 	}
 }
+
+/*
+
+*/
+func TestDefaultLineHandler(t *testing.T) {
+	pairs := [][]string{
+		[]string{"", ``},
+		[]string{"a", `a
+	tell application "System Events" to keystroke return
+`},
+		[]string{"2 + 2", `2
+
+	tell application "System Events" to keystroke space
+	delay .1
+
++
+
+	tell application "System Events" to keystroke space
+	delay .1
+
+2
+	tell application "System Events" to keystroke return
+`},
+	}
+	handler := new(defaultLineHandler)
+	handler.wordHandler = func(line string) string {
+		return line + "\n"
+	}
+	for _, pair := range pairs {
+		input := pair[0]
+		expected := pair[1]
+		actual := handler.enterKeyStrokes(input)
+		if expected != actual {
+			t.Errorf("Word macro test failures\ninput:'%v'\nexpected:'%v'\nactual:'%v'", input, expected, actual)
+		}
+	}
+}

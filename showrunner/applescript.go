@@ -2,6 +2,8 @@ package showrunner
 
 import (
 	"fmt"
+	"regexp"
+	"strings"
 )
 
 var charCodes = map[string]string{
@@ -43,5 +45,50 @@ func printWord(word string) string {
 		}
 	}
 	output += "\tend tell\n"
+	return output
+}
+
+type lineHandler interface {
+	enterKeyStrokes(line string) string
+}
+
+type echoLineHandler struct{}
+
+func (this *echoLineHandler) enterKeyStrokes(line string) string {
+	return line
+}
+
+type defaultLineHandler struct {
+	wordHandler        func(string) string
+	includeWordComment bool
+	delay              float64
+}
+
+var spaceInfo = `
+	tell application "System Events" to keystroke space
+	delay .1
+
+`
+
+func (this *defaultLineHandler) enterKeyStrokes(line string) string {
+	if len(line) == 0 {
+		return ""
+	}
+	rp := regexp.MustCompile("\\s+")
+	words := rp.Split(line, -1)
+	wordEntries := []string{}
+	for _, word := range words {
+		entry := ""
+		if this.includeWordComment {
+			entry += fmt.Sprintf("\t-- \"%s\"\n", word)
+		}
+		entry += this.wordHandler(word)
+		if this.delay != 0 {
+			entry += fmt.Sprintf("\tdelay %.2f\n")
+		}
+		wordEntries = append(wordEntries, entry)
+	}
+	output := strings.Join(wordEntries, spaceInfo)
+	output += "\ttell application \"System Events\" to keystroke return\n"
 	return output
 }
