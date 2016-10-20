@@ -35,7 +35,7 @@ func printWord(word string) string {
 	for _, c := range word {
 		code, found := charCodes[string(c)]
 		if found {
-			output += fmt.Sprintf("\t\tkey code \"%s\"\n", code)
+			output += fmt.Sprintf("\t\tkey code %s\n", code)
 		} else {
 			output += fmt.Sprintf("\t\tkeystroke \"%s\"\n", string(c))
 		}
@@ -84,7 +84,7 @@ func (this *defaultLineHandler) enterKeyStrokes(line string) string {
 		}
 		entry += this.wordHandler(word)
 		if this.delay != 0 {
-			entry += fmt.Sprintf("\tdelay %.2f\n")
+			entry += fmt.Sprintf("\tdelay %.2f\n", this.delay)
 		}
 		wordEntries = append(wordEntries, entry)
 	}
@@ -136,8 +136,15 @@ tell application "Terminal"
 	return header
 }
 
-func lineBuilder(lines []string, size int) string {
+func lineBuilder(lines []string, filepath string, size int) string {
 	output := getHeader(size)
+	i := -1
+	snapshot := func() string {
+		i++
+		return (fmt.Sprintf("\tset shellCommand to \"/usr/sbin/screencapture \" & theDesktop & \"%s-%d.png\"\n", filepath, i) +
+			"\tdo shell script shellCommand\n")
+	}
+	output += snapshot()
 	for _, line := range lines {
 		if strings.TrimSpace(line) == "" {
 			continue
@@ -148,6 +155,7 @@ func lineBuilder(lines []string, size int) string {
 			output += waitForScript(line)
 		}
 		output += "\tdelay 1\n"
+		output += snapshot()
 	}
 	output += `
 	delay 5
