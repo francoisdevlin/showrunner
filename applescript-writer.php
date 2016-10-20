@@ -140,8 +140,10 @@ function enterKeystrokes($line){
 		$wordEntries[] = $entry;
 	}
 	$spaceInfo = <<<EOD
+
 	tell application "System Events" to keystroke space
 	delay .1
+
 
 EOD;
 	$output = join($spaceInfo,$wordEntries);
