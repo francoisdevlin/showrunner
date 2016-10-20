@@ -3,7 +3,7 @@ clear
 FILE=$1
 LINES=$(grep -v "#" $FILE)
 HOST=$(hostname -s)
-MY_PROMPT="\033[36m$USER\033[m@\033[32m$HOST:\033[33;1m\033[m\$ "
+MY_PROMPT="\033[36m$USER\033[m@\033[32m$HOST:\033[33;1m~\033[m\$ "
 COLOR_PROMPT=$(echo -e "$MY_PROMPT")
 IFS=$'\n'
 for LINE in $(grep -v "#" $FILE); do
