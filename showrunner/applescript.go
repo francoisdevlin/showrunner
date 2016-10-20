@@ -73,7 +73,7 @@ var spaceInfo = `
 
 func (this *defaultLineHandler) enterKeyStrokes(line string) string {
 	if len(line) == 0 {
-		return ""
+		return "\ttell application \"System Events\" to keystroke return\n"
 	}
 	rp := regexp.MustCompile("\\s+")
 	words := rp.Split(line, -1)
@@ -150,16 +150,25 @@ func lineBuilder(lines []string, path string, size int) string {
 	}
 	output += snapshot()
 	for _, line := range lines {
+		takeSnapshot := true
 		if strings.TrimSpace(line) == "" {
 			continue
 		}
-		if line[0:1] == "!" {
+		if line[0:1] == "-" {
+			takeSnapshot = false
+			line = line[1:]
+		}
+		if line[0:1] == "^" {
+			output += "\ttell application \"System Events\" to key code " + line[1:] + "\n"
+		} else if line[0:1] == "!" {
 			output += enterKeyStrokes(line[1:])
 		} else {
 			output += waitForScript(line)
 		}
-		output += "\tdelay 1\n"
-		output += snapshot()
+		if takeSnapshot {
+			output += "\tdelay 1\n"
+			output += snapshot()
+		}
 	}
 	output += `
 	delay 5
