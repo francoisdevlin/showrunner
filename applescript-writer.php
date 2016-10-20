@@ -62,7 +62,7 @@ EOD;
 
 $tempFile = "/tmp/temp_command.applescript";
 file_put_contents($tempFile,$output);
-exec("/usr/bin/osascript $tempFile");
+//exec("/usr/bin/osascript $tempFile");
 //exec("rm -rf $tempFile");
 
 
@@ -133,10 +133,10 @@ function enterKeystrokes($line){
 	$wordEntries = [];
 	foreach ($words as $word){
 		$entry = "";
-		$entry.= "\t-- \"$word\"\n";
+		//$entry.= "\t-- \"$word\"\n";
 		//$entry.="\ttell application \"System Events\" to keystroke \"$word\"\n";
 		$entry.=printWord($word);
-		$entry.="\tdelay .1\n";
+		$entry.="\tdelay 0.10\n";
 		$wordEntries[] = $entry;
 	}
 	$spaceInfo = <<<EOD
