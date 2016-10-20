@@ -92,3 +92,69 @@ func (this *defaultLineHandler) enterKeyStrokes(line string) string {
 	output += "\ttell application \"System Events\" to keystroke return\n"
 	return output
 }
+
+func enterKeyStrokes(line string) string {
+	handler := new(defaultLineHandler)
+	handler.wordHandler = printWord
+	handler.delay = 0.1
+	return handler.enterKeyStrokes(line)
+}
+
+func waitForScript(line string) string {
+	output := fmt.Sprintf("\tset w to do script \"%s\" in currentTab\n", line) +
+		`
+	repeat 
+		delay 1
+		if not busy of w then exit repeat
+	end repeat
+
+`
+	return output
+}
+
+func getHeader(size int) string {
+	header := `
+tell application "Terminal"
+	set theDesktop to POSIX path of (path to desktop as string)
+	activate
+	set frontWindow to window 1
+	set currentTab to do script "echo 'Hello World'"
+	tell application "System Events"
+
+`
+	for i := 0; i < size; i++ {
+		header += "\t\tkeystroke \"+\" using {command down}\n"
+	}
+	header += `
+		keystroke "f" using {command down, control down}
+	end tell
+	delay 5
+	do script "clear" in currentTab
+	delay 5
+
+`
+	return header
+}
+
+func lineBuilder(lines []string, size int) string {
+	output := getHeader(size)
+	for _, line := range lines {
+		if strings.TrimSpace(line) == "" {
+			continue
+		}
+		if line[0:1] == "!" {
+			output += enterKeyStrokes(line[1:])
+		} else {
+			output += waitForScript(line)
+		}
+		output += "\tdelay 1\n"
+	}
+	output += `
+	delay 5
+	tell application "System Events"
+		keystroke "w" using {command down}
+	end tell
+end tell
+`
+	return output
+}
