@@ -1,0 +1,11 @@
+#!/bin/bash
+IN_FILE="$1"
+OUT_FILE="temp.commands"
+echo "Hi $FILE"
+echo "!vi temp.go" > $OUT_FILE
+echo "!i" >> $OUT_FILE
+sed -e 's:.*//.*::' -e 's/^/-!/' $IN_FILE | uniq | perl -0pe 's/-!([^\n]+)\n-!\n/!$1\n-!\n/sg' | sed -e 's/! */!/' >> $OUT_FILE
+echo "^53" >> $OUT_FILE
+echo "!:q!" >> $OUT_FILE
+show-runner applescript -file $OUT_FILE
+rm $OUT_FILE
