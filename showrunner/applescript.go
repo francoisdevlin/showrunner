@@ -23,7 +23,7 @@ var charCodes = map[string]string{
 	"\"": "39 using shift down",
 	"`":  "50",
 	".":  "47",
-	"\\": "\"\\\"",
+	"\\": "42",
 }
 
 func printWord(word string) string {
