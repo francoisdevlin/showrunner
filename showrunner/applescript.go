@@ -131,7 +131,7 @@ tell application "Terminal"
 	end tell
 	delay 5
 	do script "clear" in currentTab
-	delay 5
+	delay 2
 
 `
 	return header
@@ -171,7 +171,7 @@ func lineBuilder(lines []string, path string, size int) string {
 		}
 	}
 	output += `
-	delay 5
+	delay 2
 	tell application "System Events"
 		keystroke "w" using {command down}
 	end tell
